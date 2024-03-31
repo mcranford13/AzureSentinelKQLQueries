@@ -1,0 +1,3444 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/e51fa5a4-bee1-4e9f-9d99-05a83e4889fa')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/e51fa5a4-bee1-4e9f-9d99-05a83e4889fa')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious DotNET CLR Usage Log Artifact",
+                "description": "Binary used to execute scripts in Windows. This alert detects the creation of Usage Log files by the CLR (clr.dll). These files are named after the executing process once the assembly is finished executing for the first time in the (user) session context.",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceFileEvents\n| where FileName has_any (\"cmstp.exe.log\", \"cscript.exe.log\", \"mshta.exe.log\", \"msxsl.exe.log\", \"regsvr32.exe.log\", \"rundll32.exe.log\", \"svchost.exe.log\",\"wscript.exe.log\", \"wmic.exe.log\")\n| where not (InitiatingProcessFolderPath endswith @\"\\MsiExec.exe\" or InitiatingProcessFileName =~ \"MsiExec.exe\")\n| where not ((InitiatingProcessCommandLine has \"-Embedding\" and InitiatingProcessFileName =~ \"rundll32.exe\") and (InitiatingProcessCommandLine has_all (\"Temp\", \"zzzzInvokeManagedCustomActionOutOfProc\")))\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1564",
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "InitiatingProcessAccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "InitiatingProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/8acc2f6d-fc17-4e73-a57b-79b51bf0475c')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/8acc2f6d-fc17-4e73-a57b-79b51bf0475c')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious CustomShellHost Execution",
+                "description": "A host process that is used by custom shells when using Windows in Kiosk mode. This alert detects the execution of CustomShellHost binary where the child isn't located in 'C:\\Windows\\explorer.exe'\n\nResource:\nhttps://lolbas-project.github.io/lolbas/Binaries/CustomShellHost/\nhttps://attack.mitre.org/techniques/T1218/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where InitiatingProcessFolderPath endswith @\"\\CustomShellHost.exe\" or InitiatingProcessFileName =~ \"CustomShellHost.exe\"\n| where not (FolderPath endswith @\"\\explorer.exe\" or FileName =~ \"explorer.exe\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218",
+                    "T1216"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/3def0f5d-19ae-4fa8-a166-910f31409a73')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/3def0f5d-19ae-4fa8-a166-910f31409a73')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious Parent of Csc.exe",
+                "description": "Binary file used by .NET to compile C# code. This alert detects a suspicious parent of csc.exe, which could by a sign of payload delivery.",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where InitiatingProcessFileName in~ (\"wscript.exe\", \"cscript.exe\", \"mshta.exe\")\n| where FolderPath endswith @\"\\csc.exe\" or FileName =~ \"csc.exe\"\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Execution",
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1059",
+                    "T1218",
+                    "T1027",
+                    "T1127"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/343e6927-b083-4ae8-bbcb-7ca4571d1e46')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/343e6927-b083-4ae8-bbcb-7ca4571d1e46')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Comsvcs.dll",
+                "description": "Adversaries may attempt to access credential material stored in the process memory of the Local Security Authority Subsystem Service (LSASS). After a user logs on, the system generates and stores a variety of credential materials in LSASS process memory. These credential materials can be harvested by an administrative user or SYSTEM and used to conduct Lateral Movement using Use Alternate Authentication Material.\nhttps://attack.mitre.org/techniques/T1003/001/",
+                "severity": "High",
+                "enabled": true,
+                "query": "let ImageName = \"rundll32.exe\";\r\nlet CommandLineKeywords = dynamic([\"comsvcs\", \"full\"]);\r\nlet CommandLineIndicators = dynamic([\"#-\", \"#+\", \"#24\", \"24 \", \"MiniDump\"]);\r\nlet CommandLineGeneric = dynamic([\"24\", \"comsvcs\", \"full\"]);\r\nDeviceProcessEvents\r\n| where FileName == ImageName or InitiatingProcessFileName == ImageName\r\n| where ProcessCommandLine has_any (CommandLineKeywords)\r\n| where \r\n    (\r\n        (ProcessCommandLine has_any (CommandLineIndicators)) \r\n        or (ProcessCommandLine contains \" #\" or ProcessCommandLine contains \",#\" or ProcessCommandLine contains \", #\")\r\n    )\r\n| project TimeGenerated, DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine\r\n| summarize Count = count() by bin(TimeGenerated, 1h), DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine\r\n| order by TimeGenerated desc, Count desc\r\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion",
+                    "CredentialAccess"
+                ],
+                "techniques": [
+                    "T1036",
+                    "T1003"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "DisplayName",
+                                "columnName": "ProcessCommandLine"
+                            },
+                            {
+                                "identifier": "FullName",
+                                "columnName": "InitiatingProcessFileName"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/c63bfd0b-800b-4ebd-8d7f-8e9b94e77af4')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/c63bfd0b-800b-4ebd-8d7f-8e9b94e77af4')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity -Zipfldr.dll",
+                "description": "Adversaries may abuse rundll32.exe to proxy execution of malicious code. Using rundll32.exe, vice executing directly (i.e. Shared Modules), may avoid triggering security tools that may not monitor execution of the rundll32.exe process because of allowlists or false positives from normal operations. Rundll32.exe is commonly associated with executing DLL payloads (ex: rundll32.exe {DLLname, DLLfunction}).\nhttps://attack.mitre.org/techniques/T1218/011/",
+                "severity": "High",
+                "enabled": true,
+                "query": "let suspiciousCommandLinePatterns = dynamic([\r\n    \"*javascript:* .RegisterXLL*\",\r\n    \"*url.dll* OpenURL*\",\r\n    \"*url.dll* OpenURLA*\",\r\n    \"*url.dll* FileProtocolHandler*\",\r\n    \"*zipfldr.dll* RouteTheCall*\",\r\n    \"*shell32.dll* Control_RunDLL*\",\r\n    \"*shell32.dll* ShellExec_RunDLL*\",\r\n    \"*mshtml.dll* PrintHTML*\",\r\n    \"*advpack.dll* LaunchINFSection*\",\r\n    \"*advpack.dll* RegisterOCX*\",\r\n    \"*ieadvpack.dll* LaunchINFSection*\",\r\n    \"*ieadvpack.dll* RegisterOCX*\",\r\n    \"*ieframe.dll* OpenURL*\",\r\n    \"*shdocvw.dll* OpenURL*\",\r\n    \"*syssetup.dll* SetupInfObjectInstallAction*\",\r\n    \"*setupapi.dll* InstallHinfSection*\",\r\n    \"*pcwutl.dll* LaunchApplication*\",\r\n    \"*dfshim.dll* ShOpenVerbApplication*\",\r\n    \"*dfshim.dll* ShOpenVerbShortcut*\",\r\n    \"*scrobj.dll* GenerateTypeLib* http*\",\r\n    \"*shimgvw.dll* ImageView_Fullscreen* http*\",\r\n    \"*comsvcs.dll* MiniDump*\"\r\n]);\r\nlet filterMainScreensaver = \"*shell32.dll,Control_RunDLL desk.cpl,screensaver,@screensaver*\";\r\nDeviceProcessEvents\r\n| where FileName == \"rundll32.exe\"\r\n| where ProcessCommandLine has_any (suspiciousCommandLinePatterns)\r\n| where not(ProcessCommandLine contains filterMainScreensaver)\r\n| where not((InitiatingProcessFileName =~ \"control.exe\" and ProcessCommandLine contains \".cpl\") or (ProcessCommandLine startswith @'\"C:\\\\Windows\\\\system32\\\\rundll32.exe\" Shell32.dll,Control_RunDLL \"C:\\\\Windows\\\\System32\\\\' and ProcessCommandLine endswith '.cpl\",'))\r\n| project TimeGenerated, DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine\r\n| summarize Count = count() by bin(TimeGenerated, 1h), DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine\r\n| order by TimeGenerated desc, Count desc",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/10bbb0fa-ca1d-494b-8c40-e396964cd179')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/10bbb0fa-ca1d-494b-8c40-e396964cd179')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Regsvcs.exe",
+                "description": "This alert looks for possible lolbin activity surrounding regsvcs.exe. This applicaiton is a Windows command-line utilities that are used to register .NET Component Object Model (COM) assemblies. This can be used to execute malicious .dll's. Check the process commandline for further information.\n\nhttps://lolbas-project.github.io/lolbas/Binaries/Regsvcs/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName contains \"regsvcs.exe\"\n| where ProcessCommandLine contains \".dll\"\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/9fe8de53-1b8e-44e2-843f-69c55980595e')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/9fe8de53-1b8e-44e2-843f-69c55980595e')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Regsvr32.exe",
+                "description": "This alert looks for possible lolbin activity surrounding regsvr32.exe. This application is used to register dll's for windows. This can be used to bypass AWL and run malicious scripts. Look at the command line and determine if this is malicious.\n\nhttps://lolbas-project.github.io/lolbas/Binaries/Regsvr32/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName contains \"regsvr32.exe\"\n| where ProcessCommandLine contains \".sct\" or ProcessCommandLine contains \"scrobj.dll\"\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/b7d16b3e-a208-4c14-b6aa-c8b5aca526e6')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/b7d16b3e-a208-4c14-b6aa-c8b5aca526e6')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Replace.exe",
+                "description": "This alert looks for lolbin activity surrounding replace.exe. This application is used to replace files with other files.\nhttps://lolbas-project.github.io/lolbas/Binaries/Replace/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName contains \"replace.exe\"\n| where ProcessCommandLine contains \"replace\"\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/7246efe4-88cc-412f-849f-f94034920983')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/7246efe4-88cc-412f-849f-f94034920983')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - rpcping.exe",
+                "description": "This alert looks for potential lolbin activity regarding rpcping.exe. This application is used to verify rpc connections and can be used to transmit NTLM hashes in the process. Look at the process command line to see if this is reaching an external server.",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName contains \"rpcping.exe\"\n| where ProcessCommandLine contains \"rpcping\"\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CredentialAccess"
+                ],
+                "techniques": [
+                    "T1003",
+                    "T1187"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/24e77c0f-1ae0-4c79-920b-f0f05fbc6aeb')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/24e77c0f-1ae0-4c79-920b-f0f05fbc6aeb')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Potential CVE-2021-40444 Exploitation Attempt",
+                "description": "Binary used to launch controlpanel items in Windows. This alert detects potential exploitation of CVE-2021-40444 via suspicious process patterns seen in-the-wild exploitation.",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\control.exe\" or FileName =~ \"control.exe\"\n| where InitiatingProcessFileName has_any (\"winword.exe\", \"powerpnt.exe\", \"excel.exe\")\n| where not (ProcessCommandLine has_any (\"control.exe input.dll\", 'control.exe\" input.dll'))\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Execution",
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1059",
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/1119cb1b-2639-4406-8a09-31eed5f8338d')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/1119cb1b-2639-4406-8a09-31eed5f8338d')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious Control Panel DLL Load",
+                "description": "Binary used to launch controlpanel items in Windows. This alert detects suspicious Rundll32 execution from control.exe as used by Equation Group and Exploit Kits.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Control/\nhttps://attack.mitre.org/techniques/T1218/002/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where InitiatingProcessFolderPath endswith @\"\\System32\\control.exe\" or InitiatingProcessFileName =~ \"control.exe\"\n| where (FileName endswith @\"\\rundll32.exe\" or FileName =~ \"RUNDLL32.EXE\") and not (ProcessCommandLine has \"Shell32.dll\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/8c1b65ab-84fd-4e59-9213-45cc9ed8822b')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/8c1b65ab-84fd-4e59-9213-45cc9ed8822b')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious ConfigSecurityPolicy Execution",
+                "description": "ConfigSecurityPolicy is the binary part of Windows Defender. Used to manage settings in Windows Defender. you can configure different pilot collections for each of the co-management workloads. Being able to use different pilot collections allows you to take a more granular approach when shifting workloads.\n\nThis alert looks for uploading files, credentials or data exfiltration with Binary part of Windows Defender.\n\nUsecase: Upload file\nPrivileges required: User\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/ConfigSecurityPolicy/\nhttps://attack.mitre.org/techniques/T1567/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\ConfigSecurityPolicy.exe\" or FileName =~ \"ConfigSecurityPolicy.exe\" or ProcessCommandLine has \"ConfigSecurityPolicy.exe\"\n| where ProcessCommandLine has_any (\"https://\", \"http://\", \"ftp://\")\n| where not (ProcessCommandLine has 'FEP clean-up policy')\n\n",
+                "queryFrequency": "PT1H",
+                "queryPeriod": "PT1H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Exfiltration",
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1567",
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/a806d8a6-4ebd-4d0c-b8c9-37cd90e7bcb9')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/a806d8a6-4ebd-4d0c-b8c9-37cd90e7bcb9')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious Creation with Colorcpl",
+                "description": "Colorcpl is a binary that handles color management. Once executed, colorcpl.exe will copy the arbitrary file to 'c:\\windows\\system32\\spool\\drivers\\color\\'.\nUsecase: Copies file(s) to a subfolder of a generally trusted folder (c:\\Windows\\System32), which can be used to hide files or make them blend into the environment.\nPrivileges required: User\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Colorcpl/\nhttps://attack.mitre.org/techniques/T1036/005/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\colorcpl.exe\" or FileName =~ \"colorcpl.exe\"\n| where not (ProcessCommandLine has_any (\".icm\", \".gmmp\", \".cdmp\", \".camp\"))\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1564",
+                    "T1218",
+                    "T1036"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/c3f598c8-3b56-42ed-b927-a7b5caca7b1c')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/c3f598c8-3b56-42ed-b927-a7b5caca7b1c')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - CMSTP Execution Process Creation",
+                "description": "Installs or removes a Connection Manager service profile. This alert detects various indicators of Microsoft Connection Manager Profile Installer execution.",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where InitiatingProcessParentFileName =~ \"cmstp.exe\" \n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion",
+                    "Execution"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "InitiatingProcessCommandLine"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/2b9876fc-bf0a-49f3-9b8f-70a2ec8475c2')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/2b9876fc-bf0a-49f3-9b8f-70a2ec8475c2')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious Cmdl32 Execution",
+                "description": "Cmdl32 aka Microsoft Connection Manager Auto-Download. Cmdl32 can be used to download a payload to evade antivirus.",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\cmdl32.exe\" or FileName =~ \"cmdl32.exe\"\n| where ProcessCommandLine has_all (\"/vpn\", \"/lan\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion",
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1218",
+                    "T1202",
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/3091c3e3-9ec5-448a-863b-759e20bbded9')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/3091c3e3-9ec5-448a-863b-759e20bbded9')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Register-cimprovider.exe",
+                "description": "This alert looks for lolbin activity surrounding 'Register-cimprovider.exe'. This application Allows standard users to perform IT-approved tasks usually reserved for administrators with Intune Endpoint Privilege Management. For more about this alert, look here: https://lolbas-project.github.io/lolbas/Binaries/Register-cimprovider/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName contains \"Register-cimprovider.exe\"\n| where ProcessCommandLine contains \"-path\"\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/162d9be7-5c53-48cf-a54e-d3e743fe8e1d')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/162d9be7-5c53-48cf-a54e-d3e743fe8e1d')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Regini.exe",
+                "description": "This alert looks for potential lolbin activity surrounding 'regini.exe'. This application performs registry modifications. This is primarily used to export data from data streams. To learn more, see here: https://lolbas-project.github.io/lolbas/Binaries/Regini/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName contains \"regini.exe\"\n| where ProcessCommandLine contains \".ini\"\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1564"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/b37ce0a0-d58e-48ae-92e4-a611bbbe730e')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/b37ce0a0-d58e-48ae-92e4-a611bbbe730e')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Potential Reconnaissance For Cached Credentials Via Cmdkey.EXE",
+                "description": "Cmdkey.exe creates, lists, and deletes stored user names and passwords or credentials. This alert detects usage of cmdkey to look for cached credentials on the system.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Cmdkey/\nhttps://attack.mitre.org/techniques/T1078/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\cmdkey.exe\" or FileName =~ \"cmdkey.exe\"\n| where ProcessCommandLine has_any (\"/l\", \"-l\", \"/list\", \"-list\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "InitialAccess",
+                    "CredentialAccess"
+                ],
+                "techniques": [
+                    "T1078",
+                    "T1003"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/cecced34-d39c-4a36-8134-a29bc12a7204')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/cecced34-d39c-4a36-8134-a29bc12a7204')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious Atbroker Execution",
+                "description": "Helper binary for Assistive Technology (AT). It's possible for this binary to be used to execute malware. This query finds instances where this binary is executed but filters out common scenarios.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Atbroker/\nhttp://www.hexacorn.com/blog/2016/07/22/beyond-good-ol-run-key-part-42/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where (FolderPath endswith @\"\\AtBroker.exe\" or FileName =~ \"AtBroker.exe\") and ProcessCommandLine has 'start'\n| where not (ProcessCommandLine has_any (\"animations\", \"audiodescription\", \"caretbrowsing\", \"caretwidth\", \"colorfiltering\", \"cusorscheme\", \"filterkeys\", \"focusborderheight\", \"highcontrast\", \"keyboardcues\", \"keyboardpref\", \"magnifierpane\", \"messageduration\", \"minimumhitradius\", \"mousekeys\", \"Narrator\", \"osk\", \"overlappedcontent\", \"windowsarranging\", \"windowtracking\", \"windowtrackingtimeout\", \"windowtrackingzorder\", \"cursorindicator\", \"livecaptions\"))\n| project-reorder  TimeGenerated, AccountName, DeviceName, ProcessCommandLine",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/bfc0a497-1079-4634-88a2-47b34dac8734')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/bfc0a497-1079-4634-88a2-47b34dac8734')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Suspicious Download Via Certutil.exe",
+                "description": "CertUtil is a Windows binary used for handling certificates. This alert detects the execution of certutil with certain flags that allow the utility to download files.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Certutil/\nhttps://attack.mitre.org/techniques/T1105/\nhttps://attack.mitre.org/techniques/T1564/004/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\certutil.exe\" or FileName =~ \"CertUtil.exe\"\n| where ProcessCommandLine has_any (\"urlcache\", \"verifyctl\") and ProcessCommandLine has \"http\"\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CommandAndControl",
+                    "LateralMovement",
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1105",
+                    "T0843",
+                    "T1564"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/62859b33-dd1a-4fd1-bc30-e9f36ccef8e3')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/62859b33-dd1a-4fd1-bc30-e9f36ccef8e3')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - File Decoded From Base64/Hex Via Certutil.EXE",
+                "description": "CertUtil.exe is a Windows binary used for handling certificates. This alert detects the execution of certutil with either the \"decode\" or \"decodehex\" flags to decode base64 or hex encoded files. This can be abused by attackers to decode an encoded payload before execution.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Certutil/\nhttps://attack.mitre.org/techniques/T1140/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\certutil.exe\" or FileName =~ \"CertUtil.exe\"\n| where ProcessCommandLine has_any (\"-decode\", \"/decode\", \"-decodehex\", \"/decodehex\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1140"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/2b0dbd93-d48f-4a04-af1d-74b06a7a9c6c')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/2b0dbd93-d48f-4a04-af1d-74b06a7a9c6c')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - File Encoded To Base64 Via Certutil.EXE",
+                "description": "CertUtil is a Windows binary used for handling certificates. This alert detects the execution of certutil with the \"encode\" flag to encode a file to base64. This can be abused by threat actors and attackers for data exfiltration.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Certutil/\nhttps://attack.mitre.org/techniques/T1027/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\certutil.exe\" or FileName =~ \"CertUtil.exe\"\n| where ProcessCommandLine has_any (\"-encode\", \"/encode\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1027"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/eee0daca-f567-43e7-a8c2-ac0b983737ae')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/eee0daca-f567-43e7-a8c2-ac0b983737ae')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - CertReq.exe",
+                "description": "CertReq.exe is dsed for requesting and managing certificates. It can also be used maliciously to download and upload files.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Certreq/\nhttps://attack.mitre.org/techniques/T1105/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\certreq.exe\" or FileName =~ \"CertReg.exe\"\n| where ProcessCommandLine has_any (\"-Post\", \"-config\", \"http\", \"C:\\\\windows\\\\win.ini\")\n| where InitiatingProcessFileName != \"MdmDiagnosticsTool.exe\"\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/7efb833b-8962-4081-99d6-fe9a8e8bef27')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/7efb833b-8962-4081-99d6-fe9a8e8bef27')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Monitoring For Persistence Via Bitsadmin.exe",
+                "description": "This query looks for instances of persistence using bitsadmin.\n\nResources: \nhttps://lolbas-project.github.io/lolbas/Binaries/Bitsadmin/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName in~ (\"bitsadmin.exe\") or ( FileName in~ (\"cmd.exe\", \"regsvr32.exe\") and ProcessCommandLine has \"bitsadmin\")\n| where ProcessCommandLine has_any (\"/SetNotifyCmdLine\", \"%COMSPEC%\", \"/Addfile\", \"http:\", \"https:\", \"ftp:\", \"ftps:\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion",
+                    "Persistence"
+                ],
+                "techniques": [
+                    "T1197"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/2b12a8e8-0f7a-4ad7-8179-b4e80cdea5a5')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/2b12a8e8-0f7a-4ad7-8179-b4e80cdea5a5')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - bitsadmin.exe download",
+                "description": "Bitsadmin used for managing background intelligent transfer. Detects usage of bitsadmin downloading a file.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Bitsadmin/\nhttps://attack.mitre.org/techniques/T1564/004/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\bitsadmin.exe\" or FileName =~ \"bitsadmin.exe\"\n| where ProcessCommandLine has_any (\"transfer\",\"create\") and ProcessCommandLine has \"http\"\n\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/a8430c95-038d-44df-8f64-43d8c852f12d')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/a8430c95-038d-44df-8f64-43d8c852f12d')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Syssetup.dll",
+                "description": "Adversaries may abuse rundll32.exe to proxy execution of malicious code. Using rundll32.exe, vice executing directly (i.e. Shared Modules), may avoid triggering security tools that may not monitor execution of the rundll32.exe process because of allowlists or false positives from normal operations. Rundll32.exe is commonly associated with executing DLL payloads (ex: rundll32.exe {DLLname, DLLfunction}).\n\nRundll32.exe can also be used to execute Control Panel Item files (.cpl) through the undocumented shell32.dll functions Control_RunDLL and Control_RunDLLAsUser. Double-clicking a .cpl file also causes rundll32.exe to execute.\n\nhttps://attack.mitre.org/techniques/T1218/011/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\r\n| where FileName =~ \"rundll32.exe\"\r\n| where not (InitiatingProcessFileName in~ (\"explorer.exe\", \"dllhost.exe\", \"sihost.exe\"))\r\n| where \r\n    (\r\n        (ProcessCommandLine has \"javascript:\" and ProcessCommandLine has \".RegisterXLL\") or\r\n        (ProcessCommandLine has \"url.dll\" and ProcessCommandLine has \"OpenURL\") or\r\n        (ProcessCommandLine has \"url.dll\" and ProcessCommandLine has \"OpenURLA\") or\r\n        (ProcessCommandLine has \"url.dll\" and ProcessCommandLine has \"FileProtocolHandler\") or\r\n        (ProcessCommandLine has \"zipfldr.dll\" and ProcessCommandLine has \"RouteTheCall\") or\r\n        (ProcessCommandLine has \"shell32.dll\" and ProcessCommandLine has \"Control_RunDLL\") or\r\n        (ProcessCommandLine has \"shell32.dll\" and ProcessCommandLine has \"ShellExec_RunDLL\") or\r\n        (ProcessCommandLine has \"mshtml.dll\" and ProcessCommandLine has \"PrintHTML\") or\r\n        (ProcessCommandLine has \"advpack.dll\" and ProcessCommandLine has \"LaunchINFSection\") or\r\n        (ProcessCommandLine has \"advpack.dll\" and ProcessCommandLine has \"RegisterOCX\") or\r\n        (ProcessCommandLine has \"ieadvpack.dll\" and ProcessCommandLine has \"LaunchINFSection\") or\r\n        (ProcessCommandLine has \"ieadvpack.dll\" and ProcessCommandLine has \"RegisterOCX\") or\r\n        (ProcessCommandLine has \"ieframe.dll\" and ProcessCommandLine has \"OpenURL\") or\r\n        (ProcessCommandLine has \"shdocvw.dll\" and ProcessCommandLine has \"OpenURL\") or\r\n        (ProcessCommandLine has \"syssetup.dll\" and ProcessCommandLine has \"SetupInfObjectInstallAction\") or\r\n        (ProcessCommandLine has \"setupapi.dll\" and ProcessCommandLine has \"InstallHinfSection\") or\r\n        (ProcessCommandLine has \"pcwutl.dll\" and ProcessCommandLine has \"LaunchApplication\") or\r\n        (ProcessCommandLine has \"dfshim.dll\" and ProcessCommandLine has \"ShOpenVerbApplication\") or\r\n        (ProcessCommandLine has \"dfshim.dll\" and ProcessCommandLine has \"ShOpenVerbShortcut\") or\r\n        (ProcessCommandLine has \"scrobj.dll\" and ProcessCommandLine has \"GenerateTypeLib\" and ProcessCommandLine has \"http\") or\r\n        (ProcessCommandLine has \"shimgvw.dll\" and ProcessCommandLine has \"ImageView_Fullscreen\" and ProcessCommandLine has \"http\") or\r\n        (ProcessCommandLine has \"comsvcs.dll\" and ProcessCommandLine has \"MiniDump\")\r\n    )\r\n    and not (\r\n        (ProcessCommandLine has \"shell32.dll,Control_RunDLL desk.cpl,screensaver,@screensaver\") or\r\n        (InitiatingProcessFileName =~ \"control.exe\" and InitiatingProcessCommandLine has \".cpl\" and ProcessCommandLine has \"Shell32.dll\" and ProcessCommandLine has \"Control_RunDLL\" and ProcessCommandLine has \".cpl\") or\r\n        (InitiatingProcessFileName =~ \"control.exe\" and ProcessCommandLine startswith @'\"C:\\\\Windows\\\\system32\\\\rundll32.exe\" Shell32.dll,Control_RunDLL \"C:\\\\Windows\\\\System32\\\\' and ProcessCommandLine endswith @'.cpl\",')\r\n    )\r\n| project TimeGenerated, DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine\r\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218",
+                    "T1216"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "InitiatingProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/b10e7a52-bcde-40e7-943b-3e5c9f94c4e4')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/b10e7a52-bcde-40e7-943b-3e5c9f94c4e4')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Acitivty - URL.dll",
+                "description": "Adversaries may abuse rundll32.exe to proxy execution of malicious code. Using rundll32.exe, vice executing directly (i.e. Shared Modules), may avoid triggering security tools that may not monitor execution of the rundll32.exe process because of allow lists or false positives from normal operations. Rundll32.exe is commonly associated with executing DLL payloads (ex: rundll32.exe {DLLname, DLLfunction}).\n\nhttps://attack.mitre.org/techniques/T1218/011/",
+                "severity": "High",
+                "enabled": true,
+                "query": "SecurityEvent\r\n| where EventID == 4688\r\n| extend CommandLineLower = tolower(CommandLine)\r\n| where CommandLineLower contains \"rundll32.exe\" \r\n| where (\r\n    (CommandLineLower contains \"javascript:\" and CommandLineLower contains \".registerxll\") or\r\n    (CommandLineLower contains \"url.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"url.dll\" and CommandLineLower contains \"openurla\") or\r\n    (CommandLineLower contains \"url.dll\" and CommandLineLower contains \"fileprotocolhandler\") or\r\n    (CommandLineLower contains \"zipfldr.dll\" and CommandLineLower contains \"routethecall\") or\r\n    (CommandLineLower contains \"shell32.dll\" and CommandLineLower contains \"control_rundll\") or\r\n    (CommandLineLower contains \"shell32.dll\" and CommandLineLower contains \"shellexec_rundll\") or\r\n    (CommandLineLower contains \"mshtml.dll\" and CommandLineLower contains \"printhtml\") or\r\n    (CommandLineLower contains \"advpack.dll\" and CommandLineLower contains \"launchinfsection\") or\r\n    (CommandLineLower contains \"advpack.dll\" and CommandLineLower contains \"registerocx\") or\r\n    (CommandLineLower contains \"ieadvpack.dll\" and CommandLineLower contains \"launchinfsection\") or\r\n    (CommandLineLower contains \"ieadvpack.dll\" and CommandLineLower contains \"registerocx\") or\r\n    (CommandLineLower contains \"ieframe.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"shdocvw.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"syssetup.dll\" and CommandLineLower contains \"setupinfobjectinstallaction\") or\r\n    (CommandLineLower contains \"setupapi.dll\" and CommandLineLower contains \"installhinfsection\") or\r\n    (CommandLineLower contains \"pcwutl.dll\" and CommandLineLower contains \"launchapplication\") or\r\n    (CommandLineLower contains \"dfshim.dll\" and CommandLineLower contains \"shoppenverbapplication\") or\r\n    (CommandLineLower contains \"dfshim.dll\" and CommandLineLower contains \"shoppenverbshortcut\") or\r\n    (CommandLineLower contains \"scrobj.dll\" and CommandLineLower contains \"generatetypelib\" and CommandLineLower contains \"http\") or\r\n    (CommandLineLower contains \"shimgvw.dll\" and CommandLineLower contains \"imageview_fullscreen\" and CommandLineLower contains \"http\") or\r\n    (CommandLineLower contains \"comsvcs.dll\" and CommandLineLower contains \"minidump\")\r\n    )\r\n| project TimeGenerated, Computer, Account, CommandLine\r\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218",
+                    "T1216"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "Computer"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "Computer"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/fddc0dfd-a6a8-4f78-a14b-5708ffa13e27')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/fddc0dfd-a6a8-4f78-a14b-5708ffa13e27')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - psr.exe",
+                "description": "This alert looks for potential lolbin activity of psr.exe. This application is responsible for Windows Problem Steps Recorder, used to record screen and clicks. More about this lolbin can be found here: https://lolbas-project.github.io/lolbas/Binaries/Psr/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where ProcessCommandLine contains \"psr.exe\"\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Collection"
+                ],
+                "techniques": [
+                    "T1113"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/134e7269-0cc7-4e00-bf8a-093b9cff839e')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/134e7269-0cc7-4e00-bf8a-093b9cff839e')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - provlaunch.exe",
+                "description": "This alert looks for potential lolbin activity surrounding provlaunch.exe. This application is used to launch any process that could be malicious (requires admin). Read more about his here: https://lolbas-project.github.io/lolbas/Binaries/Provlaunch/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where ProcessCommandLine contains \"provlaunch.exe\" or\n     FileName contains \"provlaunch.exe\"",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/b9ec20ce-3f9a-4014-8248-b98fb44dfd4a')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/b9ec20ce-3f9a-4014-8248-b98fb44dfd4a')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - PrintBrm.exe",
+                "description": "This alert looks for the potential lolbin usage of PrintBrm.exe. This application handles printer migration through the CLI. This can be used to export and import data. More about this can be found here: https://lolbas-project.github.io/lolbas/Binaries/PrintBrm/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FileName contains \"PrintBrm.exe\"\n| where ProcessCommandLine startswith \"\\\"Printbrm.exe\\\"\"\n    and ProcessCommandLine endswith \".zip\"\n\n\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CommandAndControl",
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1105",
+                    "T1564"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/b8f82320-b5f0-4c9b-9a07-086e5dae0098')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/b8f82320-b5f0-4c9b-9a07-086e5dae0098')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Shell32.dll",
+                "description": "Verify process command line to determine if false positive or not.\n\nAdversaries may abuse rundll32.exe to proxy execution of malicious code. Using rundll32.exe, vice executing directly (i.e. Shared Modules), may avoid triggering security tools that may not monitor execution of the rundll32.exe process because of allowlists or false positives from normal operations. Rundll32.exe is commonly associated with executing DLL payloads (ex: rundll32.exe {DLLname, DLLfunction}). https://attack.mitre.org/techniques/T1218/011/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\r\n| where FileName =~ \"rundll32.exe\"\r\n| where not (InitiatingProcessFileName in~ (\"OneDrive.exe\", \"SndVol.exe\", \"explorer.exe\", \"sihost.exe\"))\r\n| extend CommandLineLower = tolower(ProcessCommandLine)\r\n| where \r\n    (CommandLineLower contains \"javascript:\" and CommandLineLower contains \".registerxll\") or\r\n    (CommandLineLower contains \"url.dll\" and (CommandLineLower contains \"openurl\" or CommandLineLower contains \"openurla\" or CommandLineLower contains \"fileprotocolhandler\")) or\r\n    (CommandLineLower contains \"zipfldr.dll\" and CommandLineLower contains \"routethecall\") or\r\n    (CommandLineLower contains \"shell32.dll\" and (CommandLineLower contains \"control_rundll\" or CommandLineLower contains \"shellexec_rundll\")) or\r\n    (CommandLineLower contains \"mshtml.dll\" and CommandLineLower contains \"printhtml\") or\r\n    (CommandLineLower contains \"advpack.dll\" and (CommandLineLower contains \"launchinfsection\" or CommandLineLower contains \"registerocx\")) or\r\n    (CommandLineLower contains \"ieadvpack.dll\" and (CommandLineLower contains \"launchinfsection\" or CommandLineLower contains \"registerocx\")) or\r\n    (CommandLineLower contains \"ieframe.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"shdocvw.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"syssetup.dll\" and CommandLineLower contains \"setupinfobjectinstallaction\") or\r\n    (CommandLineLower contains \"setupapi.dll\" and CommandLineLower contains \"installhinfsection\") or\r\n    (CommandLineLower contains \"pcwutl.dll\" and CommandLineLower contains \"launchapplication\") or\r\n    (CommandLineLower contains \"dfshim.dll\" and (CommandLineLower contains \"shoppenverbapplication\" or CommandLineLower contains \"shoppenverbshortcut\")) or\r\n    (CommandLineLower contains \"scrobj.dll\" and CommandLineLower contains \"generatetypelib\" and CommandLineLower contains \"http\") or\r\n    (CommandLineLower contains \"shimgvw.dll\" and CommandLineLower contains \"imageview_fullscreen\" and CommandLineLower contains \"http\") or\r\n    (CommandLineLower contains \"comsvcs.dll\" and CommandLineLower contains \"minidump\")\r\n| where not (\r\n    CommandLineLower contains \"shell32.dll,control_rundll desk.cpl,screensaver,@screensaver\" or\r\n    (InitiatingProcessFileName =~ \"control.exe\" and InitiatingProcessCommandLine contains \".cpl\" and (CommandLineLower contains \"shell32.dll\" and CommandLineLower contains \"control_rundll\" and CommandLineLower contains \".cpl\")) or\r\n    (InitiatingProcessFileName =~ \"control.exe\" and CommandLineLower startswith \"\\\"c:\\\\windows\\\\system32\\\\rundll32.exe\\\" shell32.dll,control_rundll \\\"c:\\\\windows\\\\system32\\\\\" and CommandLineLower endswith \".cpl\\\",\")\r\n)\r\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/18f51ccb-793e-4889-80b8-b215c29ebaf5')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/18f51ccb-793e-4889-80b8-b215c29ebaf5')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Shimgvw.dll",
+                "description": "Adversaries may transfer tools or other files from an external system into a compromised environment. Tools or files may be copied from an external adversary-controlled system to the victim network through the command and control channel or through alternate protocols such as ftp. Once present, adversaries may also transfer/spread tools between victim devices within a compromised environment (i.e. Lateral Tool Transfer).\nhttps://attack.mitre.org/techniques/T1105/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\r\n| where FileName =~ \"rundll32.exe\"\r\n| where ProcessCommandLine has \"shimgvw.dll\"\r\n| where ProcessCommandLine has \"ImageView_Fullscreen\"\r\n| where ProcessCommandLine matches regex @\"://\"\r\n| project TimeGenerated, DeviceName, FileName, ProcessCommandLine, InitiatingProcessCommandLine",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "File",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/44138cfc-d764-4dbb-a77c-efe582e3110f')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/44138cfc-d764-4dbb-a77c-efe582e3110f')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - print.exe",
+                "description": "This query looks for potential lolbin activity for the print.exe application. This app is self explanitory, sending files to a printer through windows. More about this threat can be read here: https://lolbas-project.github.io/lolbas/Binaries/Print/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceEvents\n| where InitiatingProcessCommandLine !contains \"pdfprint.exe\"\n| where FileName contains \"print.exe\" or InitiatingProcessFileName contains \"print.exe\"\n| where InitiatingProcessCommandLine contains \"print.exe\" or ProcessCommandLine contains \"print.exe\"\n| where ProcessCommandLine contains \"/D\" and ProcessCommandLine contains \".exe\"\n\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion",
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1564",
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/22d617dd-6c4b-446a-894b-6e611763c9ec')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/22d617dd-6c4b-446a-894b-6e611763c9ec')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Presentationhost.exe",
+                "description": "This alert indicates that there is potential lolbin activity surrounding Presentationhost.exe. This file executes browser extensions. More can be read about this detection here: https://lolbas-project.github.io/lolbas/Binaries/Presentationhost/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceEvents\n| where ProcessCommandLine contains \"Presentationhost.exe\" or InitiatingProcessFileName contains \"Presentationhost.exe\"\n| where ProcessCommandLine endswith \".xbap\" or ProcessCommandLine startswith \"Presentationhost.exe http\"",
+                "queryFrequency": "PT1H",
+                "queryPeriod": "PT1H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion",
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1218",
+                    "T1544",
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": {
+                    "alertDynamicProperties": []
+                },
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "InitiatingProcessCommandLine"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "File",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "FileName"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/212befe7-6166-4fcc-bc21-b9eb7552ccb6')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/212befe7-6166-4fcc-bc21-b9eb7552ccb6')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Certoc.exe",
+                "description": "Used for installing certificates. Can be used to download payloads or load malicious DLLs. This alert looks for downloading files or loading DLLs. \n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Certoc/\nhttps://attack.mitre.org/techniques/T1218/\nhttps://attack.mitre.org/techniques/T1105/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\certoc.exe\" or FileName =~ \"CertOC.exe\"\n| where ProcessCommandLine has_any (\"-LoadDLL\", \"/LoadDLL\", \"-GetCACAPS\", \"/GetCACAPS\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion",
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1218",
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/b011f7c1-2a62-46e9-9601-3670d02350f7')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/b011f7c1-2a62-46e9-9601-3670d02350f7')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Bash.exe",
+                "description": "File used by Windows subsystem for Linux to execute commands. This alerts looks for suspicious commands used by bash.exe.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Bash/\nhttps://attack.mitre.org/techniques/T1202/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\bash.exe\" or FileName =~ \"bash.exe\"\n| where FolderPath !has \"Git\"\n| where ProcessCommandLine has \"-c\"\n| where not (InitiatingProcessCommandLine has_any ('C:\\\\Program Files\\\\Git\\\\post-install.bat', 'C:\\\\Program Files (x86)\\\\Git\\\\post-install.bat', 'echo /etc/post-install/*.post', 'echo /etc/post-install/*.post'))\n| where InitiatingProcessFileName !in (\"git.exe\", \"git-remote-https.exe\")\n| where AccountName !startswith \"msa-\"\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1202"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/8cd64233-147b-4ac0-8c44-b1883a4eb2d1')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/8cd64233-147b-4ac0-8c44-b1883a4eb2d1')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Shdocvw.dll",
+                "description": "Potential usecase is loading an executable payload by calling a .url file with or without quotes. The .url file extension can be renamed.\n\nVerify the command line arguments to determine if false positive or not.",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\r\n| where FileName == \"rundll32.exe\"\r\n| where (\r\n    (ProcessCommandLine has \"javascript:\" and ProcessCommandLine has \".RegisterXLL\") or\r\n    (ProcessCommandLine has \"url.dll\" and ProcessCommandLine has \"OpenURL\") or\r\n    (ProcessCommandLine has \"url.dll\" and ProcessCommandLine has \"OpenURLA\") or\r\n    (ProcessCommandLine has \"url.dll\" and ProcessCommandLine has \"FileProtocolHandler\") or\r\n    (ProcessCommandLine has \"zipfldr.dll\" and ProcessCommandLine has \"RouteTheCall\") or\r\n    (ProcessCommandLine has \"shell32.dll\" and ProcessCommandLine has \"Control_RunDLL\") or\r\n    (ProcessCommandLine has \"shell32.dll\" and ProcessCommandLine has \"ShellExec_RunDLL\") or\r\n    (ProcessCommandLine has \"mshtml.dll\" and ProcessCommandLine has \"PrintHTML\") or\r\n    (ProcessCommandLine has \"advpack.dll\" and ProcessCommandLine has \"LaunchINFSection\") or\r\n    (ProcessCommandLine has \"advpack.dll\" and ProcessCommandLine has \"RegisterOCX\") or\r\n    // Add additional conditions here\r\n    (ProcessCommandLine has \"dfshim.dll\" and ProcessCommandLine has \"ShOpenVerbShortcut\") or\r\n    (ProcessCommandLine has \"scrobj.dll\" and ProcessCommandLine has \"GenerateTypeLib\" and ProcessCommandLine has \"http\") or\r\n    (ProcessCommandLine has \"shimgvw.dll\" and ProcessCommandLine has \"ImageView_Fullscreen\" and ProcessCommandLine has \"http\")\r\n)",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "InitiatingProcessCommandLine"
+                            },
+                            {
+                                "identifier": "DisplayName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/a330b008-6fbf-489e-a9a6-b074b3d944a1')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/a330b008-6fbf-489e-a9a6-b074b3d944a1')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Setupapi.dll",
+                "description": "",
+                "severity": "High",
+                "enabled": true,
+                "query": "SecurityEvent\r\n| where EventID == 4688  // Windows security event for process creation\r\n| where NewProcessName has \"runonce.exe\"\r\n| where ParentProcessName has \"rundll32.exe\"\r\n| where CommandLine has \"setupapi.dll\" and CommandLine has \"InstallHinfSection\"",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "Computer"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "Activity"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/bf36b16b-66fa-4d06-b9fc-094da9f84937')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/bf36b16b-66fa-4d06-b9fc-094da9f84937')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - pnputil.exe",
+                "description": "This query looks for the potential lolbin usage of pnputil.exe. This executable intoduces the possiblitly of a malicious actor installing bad drivers and establishing persistance on a machine. More can be read about this here: https://lolbas-project.github.io/lolbas/Binaries/Pnputil/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceFileEvents\n| where InitiatingProcessCommandLine contains '-i' \n    or InitiatingProcessCommandLine contains '/install' \n    or InitiatingProcessCommandLine contains '-a' \n    or InitiatingProcessCommandLine contains '/add-driver' \n    or InitiatingProcessCommandLine contains '.inf'\n| where InitiatingProcessCommandLine endswith '\\\\pnputil.exe'\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Persistence",
+                    "PrivilegeEscalation"
+                ],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/13e54790-533b-4d15-acae-5dde29b14298')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/13e54790-533b-4d15-acae-5dde29b14298')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - ptkmon.exe",
+                "description": "This alert indicates that there is potential usage of ptkmon.exe for network packet capture on a host. More can be read about this here: https://lolbas-project.github.io/lolbas/Binaries/Pktmon/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceFileEvents\n| where InitiatingProcessCommandLine endswith \"\\\\pktmon.exe\" or InitiatingProcessCommandLine contains \"PktMon.exe\"\n\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CredentialAccess",
+                    "Discovery"
+                ],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/2b847fab-60f2-42b1-a244-24cc336ad93f')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/2b847fab-60f2-42b1-a244-24cc336ad93f')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - at.exe",
+                "description": "at.exe allows an actor to schedule periodic tasks. This should almost never happen since its been deprecated since Windows 8.\n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/At\nhttps://attack.mitre.org/techniques/T1053/002/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\at.exe\" or FileName =~ \"at.exe\"\n| where ProcessCommandLine has \"interactive\"\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Execution",
+                    "LateralMovement",
+                    "Persistence"
+                ],
+                "techniques": [
+                    "T1053"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/3c266823-c093-4fe1-8347-599159d2a25a')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/3c266823-c093-4fe1-8347-599159d2a25a')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Aspnet_Compiler.exe",
+                "description": "ASP.NET Compilation Tool. This alert looks for activity of someone using aspnet_compiler.exe to compile code. It takes into account whether the associate is a developer or not. \n\nResources:\nhttps://lolbas-project.github.io/lolbas/Binaries/Aspnet_Compiler/\nhttps://attack.mitre.org/techniques/T1127/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"aspnet_compiler.exe\" or FileName =~ \"aspnet_compiler.exe\"\n| where AccountName !startswith \"svc-\" and AccountName !startswith \"msa-\"\n| project AccountName = toupper(AccountName), ProcessCommandLine, DeviceName, TimeGenerated\n| join kind= inner (IdentityInfo | summarize arg_max(TimeGenerated, *) by toupper(AccountName), OnPremisesDistinguishedName\n| project AccountName, OnPremisesDistinguishedName) on $left.AccountName == $right.AccountName\n| where not (OnPremisesDistinguishedName has_any (\"DEVELOPERS\", \"DISTRIBUTION\", \"DataWareHouse\"))\n| summarize by AccountName, DeviceName, ProcessCommandLine, TimeGenerated\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1127"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/c087886f-1649-4559-be03-fdbe4156ec44')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/c087886f-1649-4559-be03-fdbe4156ec44')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - AppX Package Installation Attempts Via AppInstaller",
+                "description": "AppInstaller.exe is spawned by the default handler for the \"ms-appinstaller\" URI. It attempts to load/install a package from the referenced URL. Can be used maliciously to install software from arbitrary link. \n\nhttps://lolbas-project.github.io/lolbas/Binaries/AppInstaller/\nhttps://attack.mitre.org/techniques/T1105/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath startswith @'C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_' and FolderPath endswith @\"\\AppInstaller.exe\"\n| where ProcessCommandLine !has \"AppX9rwyqtrq9gw3wnmrap9a412nsc7145qh.mca\"//Appears as common application from Windows App Store when HD re-images machines.\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/bc2cee39-850c-4f17-af40-79f5179c8ef5')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/bc2cee39-850c-4f17-af40-79f5179c8ef5')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbins Activity - Suspicious AddinUtil.EXE CommandLine Execution",
+                "description": "AddInUtil.exe is .NET Tool used for updating cache files for Microsoft Office Add-Ins. It's possible to use it to proxy execution of malicious serliaized payload.\n\nhttps://attack.mitre.org/techniques/T1218/\nhttps://lolbas-project.github.io/lolbas/Binaries/Addinutil/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\addinutil.exe\" or FileName =~ \"AddInUtil.exe\"\n| where ProcessCommandLine has_any (\"-AddInRoot:\",\"-PipelineRoot:\",'-AddInRoot:.', '-AddInRoot:\\\".\\\"','-PipelineRoot:.','-PipelineRoot:\\\".\\\"')\n| where FolderPath has_any (@\"\\AppData\\Local\\Temp\", @\"\\Desktop\\\", @\"\\Downloads\\\", @\"\\Users\\Public\", @\"\\Windows\\Temp\\\")\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "File",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "FolderPath"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/12a38137-f704-41e0-afd4-46f510ab5148')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/12a38137-f704-41e0-afd4-46f510ab5148')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Uncommon AddinUtil.EXE CommandLine Execution",
+                "description": "Detects execution of the Add-In deployment cache updating utility (AddInutil.exe) with uncommon Addinroot or Pipelineroot paths. An adversary may execute AddinUtil.exe with uncommon Addinroot/Pipelineroot paths that point to the adversaries Addins.Store payload.\n\nhttps://lolbas-project.github.io/lolbas/Binaries/Addinutil/\nhttps://attack.mitre.org/techniques/T1218/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where FolderPath endswith @\"\\AddInUtil.exe\" or FileName =~ \"AddInUtil.exe\"\n| where ProcessCommandLine has_any (@'-AddInRoot:', @'-PipelineRoot:')\n| where not (ProcessCommandLine has_any (@'-AddInRoot:\"C:\\Program Files (x86)\\Common Files\\Microsoft Shared\\VSTA',@'-AddInRoot:C:\\Program Files (x86)\\Common Files\\Microsoft Shared\\VSTA', @'-PipelineRoot:\"C:\\Program Files (x86)\\Common Files\\Microsoft Shared\\VSTA', @'-PipelineRoot:C:\\Program Files (x86)\\Common Files\\Microsoft Shared\\VSTA' ))\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "FullName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/67c2755c-1969-4216-a4b4-cdf94aafba89')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/67c2755c-1969-4216-a4b4-cdf94aafba89')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Uncommon Child Process of AddinUtil.EXE",
+                "description": "Detects uncommon child processes of the Add-In deployment cache updating utility (AddInutil.exe) which could be a sign of potential abuse of the binary to proxy execution via a custom Addins.Store payload.\n\nhttps://lolbas-project.github.io/lolbas/Binaries/Addinutil/\nhttps://attack.mitre.org/techniques/T1218/",
+                "severity": "Medium",
+                "enabled": true,
+                "query": "DeviceProcessEvents\n| where InitiatingProcessParentFileName =~ \"AddInUtil.exe\"\n// | where FolderPath has_any (@\"\\\\Windows\\\\System32\\\\conhost.exe\", @\"\\\\Windows\\\\System32\\\\werfault.exe\", @\"\\\\Windows\\\\SysWOW64\\\\werfault.exe\")\n\n",
+                "queryFrequency": "PT5H",
+                "queryPeriod": "PT5H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1218"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "AccountName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Process",
+                        "fieldMappings": [
+                            {
+                                "identifier": "CommandLine",
+                                "columnName": "ProcessCommandLine"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/d7e47f04-4258-4674-825d-8518e3133c72')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/d7e47f04-4258-4674-825d-8518e3133c72')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity -Pcwutl.dll",
+                "description": "Potential Lolbin Activity related to Pcwutl.dll.\n\nhttps://lolbas-project.github.io/lolbas/Libraries/Pcwutl/",
+                "severity": "High",
+                "enabled": true,
+                "query": "SecurityEvent\r\n| where EventID == 4688 // Replace with the correct Event ID for process creation\r\n| where NewProcessName endswith \"rundll32.exe\"\r\n| extend CommandLineLower = tolower(CommandLine)\r\n| where \r\n    (CommandLineLower contains \"javascript:\" and CommandLineLower contains \".registerxll\") or\r\n    (CommandLineLower contains \"url.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"url.dll\" and CommandLineLower contains \"openurla\") or\r\n    (CommandLineLower contains \"url.dll\" and CommandLineLower contains \"fileprotocolhandler\") or\r\n    (CommandLineLower contains \"zipfldr.dll\" and CommandLineLower contains \"routethecall\") or\r\n    (CommandLineLower contains \"shell32.dll\" and CommandLineLower contains \"control_rundll\") or\r\n    (CommandLineLower contains \"shell32.dll\" and CommandLineLower contains \"shellexec_rundll\") or\r\n    (CommandLineLower contains \"mshtml.dll\" and CommandLineLower contains \"printhtml\") or\r\n    (CommandLineLower contains \"advpack.dll\" and CommandLineLower contains \"launchinfsection\") or\r\n    (CommandLineLower contains \"advpack.dll\" and CommandLineLower contains \"registerocx\") or\r\n    (CommandLineLower contains \"ieadvpack.dll\" and CommandLineLower contains \"launchinfsection\") or\r\n    (CommandLineLower contains \"ieadvpack.dll\" and CommandLineLower contains \"registerocx\") or\r\n    (CommandLineLower contains \"ieframe.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"shdocvw.dll\" and CommandLineLower contains \"openurl\") or\r\n    (CommandLineLower contains \"syssetup.dll\" and CommandLineLower contains \"setupinfobjectinstallaction\") or\r\n    (CommandLineLower contains \"setupapi.dll\" and CommandLineLower contains \"installhinfsection\") or\r\n    (CommandLineLower contains \"pcwutl.dll\" and CommandLineLower contains \"launchapplication\") or\r\n    (CommandLineLower contains \"dfshim.dll\" and CommandLineLower contains \"shoppenverbapplication\") or\r\n    (CommandLineLower contains \"dfshim.dll\" and CommandLineLower contains \"shoppenverbshortcut\") or\r\n    (CommandLineLower contains \"scrobj.dll\" and CommandLineLower contains \"generatetypelib\" and CommandLineLower contains \"http\") or\r\n    (CommandLineLower contains \"shimgvw.dll\" and CommandLineLower contains \"imageview_fullscreen\" and CommandLineLower contains \"http\") or\r\n    (CommandLineLower contains \"comsvcs.dll\" and CommandLineLower contains \"minidump\")\r\n| where not (CommandLineLower contains \"shell32.dll,control_rundll desk.cpl,screensaver,@screensaver\")",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": [
+                    {
+                        "entityType": "File",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "Computer"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/42c4ce39-7e9d-4b13-b715-bc407b9f313d')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/42c4ce39-7e9d-4b13-b715-bc407b9f313d')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Mshtml.dll",
+                "description": "MSHTML.dll lolbins detected.",
+                "severity": "High",
+                "enabled": true,
+                "query": "SecurityEvent\r\n| where EventID == 4688 // This Event ID corresponds to process creation\r\n| where NewProcessName has \"rundll32.exe\"\r\n| where (\r\n    (CommandLine has \"javascript:\" and CommandLine has \"\" \".RegisterXLL\") or\r\n    (CommandLine has \"\" \"url.dll\" and CommandLine has \"\" \"OpenURL\") or\r\n    (CommandLine has \"\" \"url.dll\" and CommandLine has \"\" \"OpenURLA\") or\r\n    (CommandLine has \"url.dll\" and CommandLine has \"FileProtocolHandler\") or\r\n    (CommandLine has \"zipfldr.dll\" and CommandLine has \"RouteTheCall\") or\r\n    (CommandLine has \"shell32.dll\" and CommandLine has \"Control_RunDLL\") or\r\n    (CommandLine has \"shell32.dll\" and CommandLine has \"ShellExec_RunDLL\") or\r\n    (CommandLine has \"mshtml.dll\" and CommandLine has \"PrintHTML\") or\r\n    (CommandLine has \"advpack.dll\" and CommandLine has \"LaunchINFSection\") or\r\n    (CommandLine has \"advpack.dll\" and CommandLine has \"RegisterOCX\") or\r\n    (CommandLine has \"ieadvpack.dll\" and CommandLine has \"LaunchINFSection\") or\r\n    (CommandLine has \"ieadvpack.dll\" and CommandLine has \"RegisterOCX\") or\r\n    (CommandLine has \"ieframe.dll\" and CommandLine has \"OpenURL\") or\r\n    (CommandLine has \"shdocvw.dll\" and CommandLine has \"OpenURL\") or\r\n    (CommandLine has \"syssetup.dll\" and CommandLine has \"SetupInfObjectInstallAction\") or\r\n    (CommandLine has \"setupapi.dll\" and CommandLine has \"InstallHinfSection\") or\r\n    (CommandLine has \"pcwutl.dll\" and CommandLine has \"LaunchApplication\") or\r\n    (CommandLine has \"dfshim.dll\" and CommandLine has \"ShOpenVerbApplication\") or\r\n    (CommandLine has \"dfshim.dll\" and CommandLine has \"ShOpenVerbShortcut\") or\r\n    (CommandLine has \"scrobj.dll\" and CommandLine has \"GenerateTypeLib\" and CommandLine has \"http\") or\r\n    (CommandLine has \"shimgvw.dll\" and CommandLine has \"ImageView_Fullscreen\" and CommandLine has \"http\") or\r\n    (CommandLine has \"comsvcs.dll\" and CommandLine has \"MiniDump\")\r\n)\r\n| where not (\r\nCommandLine contains \"shell32.dll,Control_RunDLL desk.cpl,screensaver,@screensaver\"\r\n    // Remove checks against ParentImage and ParentCommandLine if they are not available in your schema\r\n)",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": {
+                    "alertDynamicProperties": []
+                },
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Name",
+                                "columnName": "Account"
+                            },
+                            {
+                                "identifier": "IsDomainJoined",
+                                "columnName": "Computer"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/43a5e8a0-14b5-48e1-9c6f-987f9fca2685')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/43a5e8a0-14b5-48e1-9c6f-987f9fca2685')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - Pcwrun.exe",
+                "description": "This alert looks for activity around the Program Compatibility Wizard application. This looks for anything where the file path contains Pcwrun.exe and some command line arguements. https://lolbas-project.github.io/lolbas/Binaries/Pcwrun/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceFileEvents\n| where FolderPath endswith '\\\\pcwrun.exe'\n| where InitiatingProcessCommandLine contains '..\\\\'\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [
+                    "T1202"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/739ee7a1-07f4-43c7-ae97-46112f6dc9db')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/739ee7a1-07f4-43c7-ae97-46112f6dc9db')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential LolBin Activity - OneDriveStandaloneUpdater.exe",
+                "description": "This query looks for the potential lolbin usage of OneDriveStandaloneUpdater.exe. This specifically searches for the registry value of that application when the action type is 'value set'. https://lolbas-project.github.io/lolbas/Binaries/OneDriveStandaloneUpdater/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceRegistryEvents\n| where ActionType == \"RegistryValueSet\"\n| where RegistryKey contains \"\\\\SOFTWARE\\\\Microsoft\\\\OneDrive\\\\UpdateOfficeConfig\\\\UpdateRingSettingURLFromOC\"\n\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "CommandAndControl"
+                ],
+                "techniques": [
+                    "T1105"
+                ],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        },
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/6559f6e5-2550-4795-93b3-3b37285a31c7')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/6559f6e5-2550-4795-93b3-3b37285a31c7')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2022-11-01-preview",
+            "properties": {
+                "displayName": "Potential Lolbin Activity - Pcalua.exe",
+                "description": "This query searches for activity ardound the lolbin use of Program Compatibility Assistant (Pcalua.exe). More activity surrounding the execution of this application can be found here: https://lolbas-project.github.io/lolbas/Binaries/Pcalua/",
+                "severity": "High",
+                "enabled": true,
+                "query": "DeviceFileEvents\n| where InitiatingProcessCommandLine contains \" -a\"\n| where InitiatingProcessFileName endswith \"\\\\pcalua.exe\"\n| project DeviceName, InitiatingProcessAccountName, FileName, InitiatingProcessCommandLine\n\n",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "DefenseEvasion"
+                ],
+                "techniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": true,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "P1D",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": null,
+                "entityMappings": null,
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        }
+    ]
+}
